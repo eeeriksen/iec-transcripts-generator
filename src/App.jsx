@@ -4,9 +4,18 @@ import html2pdf from 'html2pdf.js';
 import { Transcript } from './Transcript';
 import { Modal } from './Modal';
 import { Header } from './components/Header';
+import { FileIcon } from './components/FileIcon';
+import logo from './assets/logo-2.png'
+import footer from './assets/footer-2.png'
+import vcea from './assets/vcea.png'
+import studyTennessee from './assets/study-tennessee.png'
+import englishUsa from './assets/english-usa.png'
+import levels1 from './assets/levels1.png'
+import levels2 from './assets/levels2.png'
 
 export default function App() {
-    const [students, setStudent] = useState([]);
+    const pagesRef = useRef([]);
+    const [students, setStudents] = useState([]);
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [studentElements, setStudentElements] = useState([]);
@@ -17,7 +26,7 @@ export default function App() {
         Papa.parse(file, {
             header: true,
             complete: (result) => {
-                setStudent(result.data);
+                setStudents(result.data);
 
                 const grouped = result.data.reduce((acc, student) => {
                     if (!acc[student.name]) {
@@ -27,54 +36,47 @@ export default function App() {
                     return acc;
                 }, {});
 
-                const elements = Object.keys(grouped).map((studentName) => {
-                    const courses = grouped[studentName];
-                    return `
-                        <div class="pdf-page" style="width: 8in; height: 10.5in; padding: 1in; font-family: sans-serif; box-sizing: border-box;">
-                            <h1 style="text-align:center; margin-bottom: 1rem;">Academic Certificate</h1>
-                            <p><strong>Student Name:</strong> ${studentName}</p>
-                            <table style="width:100%; margin-top:1rem; border-collapse: collapse;">
-                                <thead>
-                                    <tr>
-                                        <th style="text-align:left; border-bottom: 2px solid #000;">Course</th>
-                                        <th style="text-align:right; border-bottom: 2px solid #000;">Grade</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${courses.map(course => `
-                                        <tr>
-                                            <td style="padding: 8px 0;">${course.course}</td>
-                                            <td style="padding: 8px 0; text-align:right;">${course.grade}</td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
-                        </div>
-                    `;
-                });
-
-                setStudentElements(elements);
+                setStudentElements(grouped);
             },
         });
     };
-
 
     const generatePDF = async (student) => {
         const container = pdfRef.current;
         const pages = container.querySelectorAll('.pdf-page');
         const index = Object.keys(groupedStudents).indexOf(student.name);
         const page = pages[index];
+        console.log(page)
 
+        console.log('Generating PDF for:', student.name);
 
         const options = {
             filename: `carta-${student.name.replace(/\s+/g, '_')}.pdf`,
             margin: 0,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
+            image: { type: 'jpeg', quality: 1 },
+            html2canvas: { scale: 4 },
             jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
         };
 
-        await html2pdf().set(options).from(page).save();
+        // await html2pdf().set(options).from(page).save();
+
+        // otra opcion
+        const html = pagesRef.current.map(el => el?.outerHTML).join('');
+
+        console.log('HTML content:', html);
+
+        const res = await fetch('http://localhost:3000/generate-pdf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ html })
+        });
+
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'transcript.pdf';
+        a.click();
     };
 
     const groupedStudents = students.reduce((acc, student) => {
@@ -85,7 +87,6 @@ export default function App() {
         return acc;
     }, {});
 
-    console.log(groupedStudents);
     const generarTodos = async () => {
         for (const student of students) {
             await generatePDF(student);
@@ -155,9 +156,221 @@ export default function App() {
 
                 {students.length > 0 && <div ref={pdfRef} className="mt-20">
                     <h2 className="text-sky-800 font-black mb-20 text-3xl text-center">Student transcripts</h2>
-                    {studentElements.map((html, i) => (
-                        <div key={i} dangerouslySetInnerHTML={{ __html: html }} />
-                    ))}
+                    {Object.keys(studentElements).map((studentName, index) => {
+                        const studentData = studentElements[studentName];
+                        console.log(studentData)
+                        return <>
+                            <div
+                                key={`1page-${studentName}`}
+                                className="pdf-page"
+                                // style={{ width: '8.5in', height: '11in', padding: '1in', position: 'relative' }}
+                                ref={(el) => (pagesRef.current[index] = el)}
+                            >
+                                <header>
+                                    <img src={logo} alt="Logo" />
+                                </header>
+                                <main>
+                                    <p className="title">OFFICIAL TRANSCRIPT</p>
+
+                                    <div className="transcript-grid">
+
+                                        <div className="grid-row row-gap-title">
+                                            <div className="cell"><p></p></div>
+                                            <div className="cell"><p>STUDENT INFORMATION</p></div>
+                                        </div>
+
+                                        <div className="grid-row row-4-cols">
+                                            <div className="cell"><p>NAME</p></div>
+                                            <div className="cell"><p></p></div>
+                                            <div className="cell"><p>IEC NUMBER</p></div>
+                                            <div className="cell"><p></p></div>
+                                        </div>
+                                        <div className="grid-row row-4-cols">
+                                            <div className="cell"><p>TERM</p></div>
+                                            <div className="cell"><p></p></div>
+                                            <div className="cell"><p>PROGRAM</p></div>
+                                            <div className="cell"><p></p></div>
+                                        </div>
+                                        <div className="grid-row row-4-cols">
+                                            <div className="cell"><p>LEVEL</p></div>
+                                            <div className="cell"><p></p></div>
+                                            <div className="cell"><p>STATUS</p></div>
+                                            <div className="cell"><p></p></div>
+                                        </div>
+
+                                        <div className="grid-row row-gap-title">
+                                            <div className="cell"><p></p></div>
+                                            <div className="cell"><p>ACADEMIC RECORDS</p></div>
+                                        </div>
+
+                                        <div className="grid-row row-grades-title">
+                                            <div className="cell"><p>COURSE</p></div>
+                                            <div className="cell"><p>CODE</p></div>
+                                            <div className="cell"><p>MID-TERM</p></div>
+                                            <div className="cell"><p>FOLLOW UP</p></div>
+                                            <div className="cell"><p>PROJECT / PORTFOLIO</p></div>
+                                            <div className="cell"><p>FINAL</p></div>
+                                            <div className="cell"><p>COURSE SCORE</p></div>
+                                            <div className="cell"><p>GRADE SCORE</p></div>
+                                            <div className="cell"><p>RESULT</p></div>
+                                            <div className="cell"><p>ATTENDANCE</p></div>
+                                        </div>
+
+                                        <div className="main-grid">
+                                            <div className="courses-area">
+                                                <div className="courses-grid">
+                                                    <div className="course-row">
+                                                        <div className="course-cell course-name">Matemáticas</div>
+                                                        <div className="course-cell">MAT101</div>
+                                                        <div className="course-cell">85</div>
+                                                        <div className="course-cell">90</div>
+                                                        <div className="course-cell">88</div>
+                                                        <div className="course-cell">92</div>
+                                                        <div className="course-cell">89</div>
+                                                        <div className="course-cell grade-a">A</div>
+                                                        <div className="course-cell">4.0</div>
+                                                    </div>
+
+                                                    <div className="course-row">
+                                                        <div className="course-cell course-name">Historia</div>
+                                                        <div className="course-cell">HIS201</div>
+                                                        <div className="course-cell">78</div>
+                                                        <div className="course-cell">82</div>
+                                                        <div className="course-cell">85</div>
+                                                        <div className="course-cell">80</div>
+                                                        <div className="course-cell">81</div>
+                                                        <div className="course-cell grade-b">B</div>
+                                                        <div className="course-cell">3.0</div>
+                                                    </div>
+
+                                                    <div className="course-row">
+                                                        <div className="course-cell course-name">Ciencias</div>
+                                                        <div className="course-cell">SCI301</div>
+                                                        <div className="course-cell">92</div>
+                                                        <div className="course-cell">88</div>
+                                                        <div className="course-cell">95</div>
+                                                        <div className="course-cell">90</div>
+                                                        <div className="course-cell">91</div>
+                                                        <div className="course-cell grade-a">A</div>
+                                                        <div className="course-cell">4.0</div>
+                                                    </div>
+
+                                                    <div className="course-row">
+                                                        <div className="course-cell course-name">Inglés</div>
+                                                        <div className="course-cell">ENG401</div>
+                                                        <div className="course-cell">76</div>
+                                                        <div className="course-cell">79</div>
+                                                        <div className="course-cell">82</div>
+                                                        <div className="course-cell">78</div>
+                                                        <div className="course-cell">79</div>
+                                                        <div className="course-cell grade-b">B</div>
+                                                        <div className="course-cell">3.0</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="attendance-area">
+                                                95%
+                                            </div>
+                                        </div>
+
+                                        <div className="grid-row row-final-score">
+                                            <div className="cell"><p></p></div>
+                                            <div className="cell"><p>*LEVEL SCORE</p></div>
+                                            <div className="cell"><p></p></div>
+                                            <div className="cell"><p></p></div>
+                                            <div className="cell"><p>PASS FAIL</p></div>
+                                        </div>
+
+                                    </div>
+
+                                    {/* <div className="grading-scale">
+                                    <img src={scalingGrade} alt="Grading Scale" />
+                                </div> */}
+
+                                    <div className="parent grading-scale">
+                                        <div className="full-width blue">REMARKS</div>
+                                        <div className="full-width">*For students with full-course load, the level score is calculated by taking a weighted average of all course scores for the respective level. The weighting of the course score relative to level score is determined by taking the weekly contact hours of that course into consideration. The weighting is calculated by multiplying the number of weekly hours with 4.55 and then dividing it to 100.</div>
+                                        <div className="full-width blue">GRADING SCALE</div>
+
+                                        <div className="grid-cell letter bold">A</div>
+                                        <div className="grid-cell letter bold">B</div>
+                                        <div className="grid-cell letter bold">C</div>
+                                        <div className="grid-cell letter bold">D</div>
+                                        <div className="grid-cell letter bold">F</div>
+                                        <div className="grid-cell letter bold">W</div>
+                                        <div className="grid-cell letter bold">I</div>
+                                        <div className="grid-cell letter bold">N/A</div>
+
+                                        <div className="grid-cell letter">100-90</div>
+                                        <div className="grid-cell letter">89-80</div>
+                                        <div className="grid-cell letter">79-70</div>
+                                        <div className="grid-cell letter">69-60</div>
+                                        <div className="grid-cell letter">59-0</div>
+                                        <div className="grid-cell letter">0</div>
+                                        <div className="grid-cell letter">0</div>
+                                        <div className="grid-cell letter">0</div>
+
+                                        <div className="grid-cell text"><span>Excellent</span>, work of exceptional quality which indicates the highest level of attainment in a course</div>
+                                        <div className="grid-cell text"><span>Good</span>, work above average which indicates a high level of achievement</div>
+                                        <div className="grid-cell text"><span>Average</span>, work of average quality representing substantial fulfillment of the minimum essentials
+
+                                        </div>
+                                        <div className="grid-cell text"><span>Poor</span>, but may represent passing if average level score is 70 and above</div>
+                                        <div className="grid-cell text"><span>Failure</span>, representing unacceptable performance in the course</div>
+                                        <div className="grid-cell text">Official <span>withdrawal</span> from a course or level</div>
+                                        <div className="grid-cell text"><span>Incomplete</span> work</div>
+                                        <div className="grid-cell text"><span>Failure</span> to meet the attendance requirement without valid reason</div>
+                                    </div>
+
+                                    <div className="signature-grid">
+                                        <div className="cell head"><p>OFFICIAL SIGNATURE</p></div>
+                                        <div className="cell head"><p>DATE ISSUED</p></div>
+                                        <div className="cell">
+                                            <p className="signature-name">Vladimir S. Betancur</p>
+                                            <p className="signature-title">IEC Coordinator</p>
+                                        </div>
+                                        <div className="cell date"><p>20 July 3, 2025</p></div>
+                                    </div>
+                                </main>
+
+                                <div className="logos">
+                                    <img src={vcea} alt="VCEA" />
+                                    <img src={englishUsa} alt="English USA" />
+                                    <img src={studyTennessee} alt="Study Tennessee" />
+                                </div>
+
+                                <footer>
+                                    <img src={footer} alt="Footer" />
+                                </footer>
+                            </div>
+
+                            <div
+                                key={`2page-${studentName}`}
+                                className="pdf-page dos"
+                            >
+                                <header>
+                                    <img src={logo} alt="Logo" />
+                                </header>
+
+                                <main className="levels">
+                                    <img src={levels1} alt="Levels1" />
+                                    <img src={levels2} alt="Levels2" />
+                                </main>
+
+                                <div className="logos dos">
+                                    <img src={vcea} alt="VCEA" />
+                                    <img src={englishUsa} alt="English USA" />
+                                    <img src={studyTennessee} alt="Study Tennessee" />
+                                </div>
+
+                                <footer>
+                                    <img src={footer} alt="Footer" />
+                                </footer>
+                            </div>
+                        </>
+
+                    })}
                 </div>}
                 <Modal student={selectedStudent} isOpen={modalOpen} closeModal={closeModal} />
             </main>

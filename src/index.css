@@ -3,7 +3,7 @@
 @import "tailwindcss";
 
 * {
-    font-family: "Lato", sans-serif;
+    font-family: "Carlito", sans-serif;
     box-sizing: border-box;
 }
 
@@ -17,4 +17,462 @@ body {
     width: 100%;
     min-height: 100vh;
     overflow: hidden;
+}
+
+.pdf-page {
+    width: 8.27in;
+    height: 11in;
+    padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+    font-family: "Carlito", sans-serif;
+    box-shadow: 0px 0px 16px 4px rgba(0, 0, 0, 0.05), 0px 14px 10px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 24px;
+    background: #fff;
+}
+
+header {
+    height: 98px;
+    width: 100%;
+    background-color: #fff;
+}
+
+header {
+    background-color: #fff;
+    position: relative;
+}
+
+header p {
+    font-size: 13.7px;
+    font-weight: 400;
+    text-align: center;
+    margin: 0;
+    color: #78abe1;
+    font-family: "Rubik", sans-serif;
+    position: absolute;
+    right: 32px;
+    bottom: -11px;
+}
+
+header img {
+    width: 100%;
+    height: auto;
+}
+
+main {
+    padding: 46px;
+}
+
+main main {
+    padding: 9px 48px 0;
+
+}
+
+.title {
+    text-align: center;
+    font-size: 23px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    line-height: 23px;
+}
+
+.transcript-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background-color: black;
+    padding: 1px;
+}
+
+.grid-row {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    display: grid;
+    gap: 1px;
+}
+
+
+.cell {
+    font-size: 14px;
+    text-align: center;
+    background-color: white;
+    font-weight: bold;
+    text-align: left;
+    padding: 0;
+    display: block;
+}
+
+.row-gap-title {
+    grid-template-columns: 1fr 9fr;
+    height: 22px;
+}
+
+.row-gap-title .cell {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    background: #498cd4;
+    color: white;
+    font-size: 18px;
+    padding: 0;
+    height: 22px;
+}
+
+.row-gap-title .cell p {
+    text-align: center;
+    height: 22px;
+    width: 100%;
+    line-height: 22px;
+}
+
+.row-title {
+    grid-template-columns: 1fr;
+}
+
+.row-4-cols {
+    grid-template-columns: 2fr 4fr 2fr 3fr;
+    height: 22px;
+}
+
+.row-4-cols .cell p {
+    padding: 0 6px;
+    font-size: 17px;
+    height: 22px;
+    line-height: 22px;
+}
+
+.row-grades-title {
+    grid-template-columns: repeat(10, 1fr);
+    height: 24px;
+}
+
+.row-grades-title .cell {
+    height: 24px;
+    font-size: 10px;
+    font-weight: 100;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.row-grades-title .cell p {
+    height: 48px;
+    font-size: 10px;
+    padding: 12px 4px;
+    line-height: 12px;
+}
+
+.row-grades-container {
+    grid-template-columns: 9fr 1fr;
+}
+
+.row-grades-container>div {
+    padding: 0;
+}
+
+
+.sub-grid-row {
+    height: 24px;
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    grid-column: span 10 / span 10;
+    gap: 1px;
+    grid-auto-flow: column;
+}
+
+.sub-grid-row-1 {
+    grid-template-columns: 1fr;
+}
+
+.sub-grid-row .cell {
+    font-size: 9px;
+    text-align: left;
+}
+
+.sub-grid-row .cell p {
+    font-size: 9px;
+    font-family: "Crimson Text";
+    font-style: italic;
+    padding: 0 4px;
+    font-size: 11px;
+}
+
+/* claude */
+/* Grid principal */
+.main-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: auto auto;
+    gap: 1px;
+}
+
+/* Encabezados */
+.header {
+    background: #3498db;
+    color: white;
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Área de datos de cursos (ocupa 9 columnas) */
+.courses-area {
+    grid-column: 1 / 10;
+    grid-row: 2;
+}
+
+/* Área de attendance (ocupa 1 columna y toda la altura) */
+.attendance-area {
+    grid-column: 10;
+    grid-row: 2;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Sub-grid para los cursos */
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    height: 100%;
+    gap: 1px;
+}
+
+.course-row {
+    display: contents;
+}
+
+/* Filas alternas con fondo gris */
+.course-row:nth-child(odd) .course-cell {
+    background: #e6e6e6;
+}
+
+.course-row:nth-child(even) .course-cell {
+    background: #ffffff;
+}
+
+.course-cell {
+    padding: 0px 4px;
+    text-align: center;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    box-sizing: border-box;
+    line-height: 32px;
+}
+
+/* Columna de COURSE con texto más pequeño para evitar desalineación */
+.course-cell.course-name {
+    font-size: 11px;
+    font-weight: 500;
+}
+
+
+/* Estilos para las calificaciones */
+/* .grade-a {
+    color: #27ae60;
+    font-weight: bold;
+}
+
+.grade-b {
+    color: #2980b9;
+    font-weight: bold;
+}
+
+.grade-c {
+    color: #f39c12;
+    font-weight: bold;
+}
+
+.grade-f {
+    color: #e74c3c;
+    font-weight: bold;
+} */
+
+.row-final-score {
+    grid-template-columns: 1fr 5fr 1fr 2fr 1fr;
+    height: 34px;
+    gap: 1px;
+}
+
+.row-final-score .cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 0 6%;
+    background: #abcdf3;
+}
+
+.row-final-score .cell:nth-child(2) p {
+    font-weight: bold;
+    font-size: 21px;
+    text-align: left;
+}
+
+.row-final-score .cell:nth-child(5) p {
+    font-weight: bold;
+    padding: 0 6px;
+    font-size: 14px;
+    text-align: center;
+    line-height: 16px;
+}
+
+.signature-grid {
+    border: 1px solid #000;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: #000;
+    margin-top: 16px;
+}
+
+.signature-grid .cell {
+    padding: 0 6px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.signature-grid .cell p {
+    text-align: center;
+}
+
+.signature-grid .cell.head {
+    font-size: 17px;
+    background-color: #4a8cd4;
+    color: #fff;
+    font-weight: bold;
+}
+
+.signature-grid .cell .signature-name {
+    font-family: "Teko", sans-serif;
+    font-size: 28px;
+    line-height: 28px;
+    font-weight: 500;
+    font-style: italic;
+    margin: 6px 0 0;
+}
+
+.signature-grid .cell .signature-title {
+    font-size: 14px;
+    font-weight: normal;
+    margin-bottom: 4px;
+}
+
+.grading-scale {}
+
+.parent {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: 30px 60px 30px 34px 34px 130px;
+    gap: 1px;
+    height: 329px;
+    border: 3px solid black;
+    background-color: #000;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: normal;
+    font-size: 12px;
+    padding: 4px;
+    background-color: #fff;
+}
+
+.full-width.blue {
+    color: white;
+    background-color: #4a8cd4;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 32px;
+    padding: 0 6px;
+}
+
+.grid-cell {
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.grid-cell.letter {
+    font-weight: normal;
+    padding: 7px;
+    font-size: 14px;
+}
+
+.grid-cell.text {
+    font-weight: normal;
+    padding: 4px;
+    font-size: 11px;
+    display: block;
+    text-align: center;
+}
+
+.grid-cell.text span {
+    text-decoration: underline;
+}
+
+.grid-cell.letter.bold {
+    font-weight: bold;
+    padding: 8px;
+    font-size: 14px;
+}
+
+.signature-grid .cell.date {
+    font-size: 18px;
+    font-weight: 500;
+    text-align: right;
+}
+
+.logos {
+    width: 470px;
+    margin: auto;
+    display: flex;
+    justify-content: space-around;
+    border-top: 2px solid #276ebb;
+    align-items: center;
+    margin-top: 22px;
+    padding-top: 10px;
+}
+
+.logos img {
+    height: 46px;
+    width: auto;
+}
+
+footer {
+    margin-top: 20px;
+    width: 100%;
+    background-color: #fff;
+    filter: opacity(0.7);
+}
+
+.levels {
+    margin-top: 56px;
+    margin-bottom: 73px;
+}
+
+.levels img:nth-child(2) {
+    margin-top: -3px;
+}
+
+.logos.dos {
+    margin-bottom: 70px;
 }
