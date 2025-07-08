@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react';
 import Papa from 'papaparse';
 import html2pdf from 'html2pdf.js';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import { Transcript } from './Transcript';
 import { Modal } from './Modal';
 import { Header } from './components/Header';
@@ -42,41 +44,66 @@ export default function App() {
     };
 
     const generatePDF = async (student) => {
-        const container = pdfRef.current;
-        const pages = container.querySelectorAll('.pdf-page');
-        const index = Object.keys(groupedStudents).indexOf(student.name);
-        const page = pages[index];
-        console.log(page)
+        // const container = pdfRef.current;
+        // const pages = container.querySelectorAll('.pdf-page');
+        // const index = Object.keys(groupedStudents).indexOf(student.name);
+        // const page = pages[index];
+        // console.log(page)
 
-        console.log('Generating PDF for:', student.name);
+        // console.log('Generating PDF for:', student.name);
 
-        const options = {
-            filename: `carta-${student.name.replace(/\s+/g, '_')}.pdf`,
-            margin: 0,
-            image: { type: 'jpeg', quality: 1 },
-            html2canvas: { scale: 4 },
-            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
-        };
+        // const options = {
+        //     filename: `carta-${student.name.replace(/\s+/g, '_')}.pdf`,
+        //     margin: 0,
+        //     image: { type: 'jpeg', quality: 1 },
+        //     html2canvas: { scale: 4 },
+        //     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+        // };
 
-        // await html2pdf().set(options).from(page).save();
+        // // await html2pdf().set(options).from(page).save();
+
+        // // otra opcion
+        // const html = pagesRef.current.map(el => el?.outerHTML).join('');
+
+        // console.log('HTML content:', html);
+
+        // const res = await fetch('http://localhost:3000/generate-pdf', {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify({ html })
+        // });
+
+        // const blob = await res.blob();
+        // const url = URL.createObjectURL(blob);
+        // const a = document.createElement('a');
+        // a.href = url;
+        // a.download = 'transcript.pdf';
+        // a.click();
 
         // otra opcion
-        const html = pagesRef.current.map(el => el?.outerHTML).join('');
 
-        console.log('HTML content:', html);
+        const pages = document.querySelectorAll('.pdf-page');
 
-        const res = await fetch('http://localhost:3000/generate-pdf', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ html })
+        const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'px',
+            format: 'a4'
         });
 
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'transcript.pdf';
-        a.click();
+        for (let i = 0; i < pages.length; i++) {
+            const canvas = await html2canvas(pages[i], { scale: 2 }); // alta calidad
+            const imgData = canvas.toDataURL('image/png');
+
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+            if (i > 0) pdf.addPage();
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        }
+
+        pdf.save('transcript.pdf');
+
     };
 
     const groupedStudents = students.reduce((acc, student) => {
@@ -220,57 +247,57 @@ export default function App() {
                                             <div className="courses-area">
                                                 <div className="courses-grid">
                                                     <div className="course-row">
-                                                        <div className="course-cell course-name">Matemáticas</div>
-                                                        <div className="course-cell">MAT101</div>
-                                                        <div className="course-cell">85</div>
-                                                        <div className="course-cell">90</div>
-                                                        <div className="course-cell">88</div>
-                                                        <div className="course-cell">92</div>
-                                                        <div className="course-cell">89</div>
-                                                        <div className="course-cell grade-a">A</div>
-                                                        <div className="course-cell">4.0</div>
+                                                        <div className="course-cell course-name"><p>Matemáticas</p></div>
+                                                        <div className="course-cell"><p>MAT101</p></div>
+                                                        <div className="course-cell"><p>85</p></div>
+                                                        <div className="course-cell"><p>90</p></div>
+                                                        <div className="course-cell"><p>88</p></div>
+                                                        <div className="course-cell"><p>92</p></div>
+                                                        <div className="course-cell"><p>89</p></div>
+                                                        <div className="course-cell grade-a"><p>A</p></div>
+                                                        <div className="course-cell"><p>4.0</p></div>
                                                     </div>
 
                                                     <div className="course-row">
-                                                        <div className="course-cell course-name">Historia</div>
-                                                        <div className="course-cell">HIS201</div>
-                                                        <div className="course-cell">78</div>
-                                                        <div className="course-cell">82</div>
-                                                        <div className="course-cell">85</div>
-                                                        <div className="course-cell">80</div>
-                                                        <div className="course-cell">81</div>
-                                                        <div className="course-cell grade-b">B</div>
-                                                        <div className="course-cell">3.0</div>
+                                                        <div className="course-cell course-name"><p>Historia</p></div>
+                                                        <div className="course-cell"><p>HIS201</p></div>
+                                                        <div className="course-cell"><p>78</p></div>
+                                                        <div className="course-cell"><p>82</p></div>
+                                                        <div className="course-cell"><p>85</p></div>
+                                                        <div className="course-cell"><p>80</p></div>
+                                                        <div className="course-cell"><p>81</p></div>
+                                                        <div className="course-cell grade-b"><p>B</p></div>
+                                                        <div className="course-cell"><p>3.0</p></div>
                                                     </div>
 
                                                     <div className="course-row">
-                                                        <div className="course-cell course-name">Ciencias</div>
-                                                        <div className="course-cell">SCI301</div>
-                                                        <div className="course-cell">92</div>
-                                                        <div className="course-cell">88</div>
-                                                        <div className="course-cell">95</div>
-                                                        <div className="course-cell">90</div>
-                                                        <div className="course-cell">91</div>
-                                                        <div className="course-cell grade-a">A</div>
-                                                        <div className="course-cell">4.0</div>
+                                                        <div className="course-cell course-name"><p>Ciencias</p></div>
+                                                        <div className="course-cell"><p>SCI301</p></div>
+                                                        <div className="course-cell"><p>92</p></div>
+                                                        <div className="course-cell"><p>88</p></div>
+                                                        <div className="course-cell"><p>95</p></div>
+                                                        <div className="course-cell"><p>90</p></div>
+                                                        <div className="course-cell"><p>91</p></div>
+                                                        <div className="course-cell grade-a"><p>A</p></div>
+                                                        <div className="course-cell"><p>4.0</p></div>
                                                     </div>
 
                                                     <div className="course-row">
-                                                        <div className="course-cell course-name">Inglés</div>
-                                                        <div className="course-cell">ENG401</div>
-                                                        <div className="course-cell">76</div>
-                                                        <div className="course-cell">79</div>
-                                                        <div className="course-cell">82</div>
-                                                        <div className="course-cell">78</div>
-                                                        <div className="course-cell">79</div>
-                                                        <div className="course-cell grade-b">B</div>
-                                                        <div className="course-cell">3.0</div>
+                                                        <div className="course-cell course-name"><p>Inglés</p></div>
+                                                        <div className="course-cell"><p>ENG401</p></div>
+                                                        <div className="course-cell"><p>76</p></div>
+                                                        <div className="course-cell"><p>79</p></div>
+                                                        <div className="course-cell"><p>82</p></div>
+                                                        <div className="course-cell"><p>78</p></div>
+                                                        <div className="course-cell"><p>79</p></div>
+                                                        <div className="course-cell grade-b"><p>B</p></div>
+                                                        <div className="course-cell"><p>3.0</p></div>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div className="attendance-area">
-                                                95%
+                                                <p>95%</p>
                                             </div>
                                         </div>
 
@@ -284,43 +311,37 @@ export default function App() {
 
                                     </div>
 
-                                    {/* <div className="grading-scale">
-                                    <img src={scalingGrade} alt="Grading Scale" />
-                                </div> */}
-
                                     <div className="parent grading-scale">
-                                        <div className="full-width blue">REMARKS</div>
-                                        <div className="full-width">*For students with full-course load, the level score is calculated by taking a weighted average of all course scores for the respective level. The weighting of the course score relative to level score is determined by taking the weekly contact hours of that course into consideration. The weighting is calculated by multiplying the number of weekly hours with 4.55 and then dividing it to 100.</div>
-                                        <div className="full-width blue">GRADING SCALE</div>
+                                        <div className="full-width blue"><p>REMARKS</p></div>
+                                        <div className="full-width"><p>*For students with full-course load, the level score is calculated by taking a weighted average of all course scores for the respective level. The weighting of the course score relative to level score is determined by taking the weekly contact hours of that course into consideration. The weighting is calculated by multiplying the number of weekly hours with 4.55 and then dividing it to 100.</p></div>
+                                        <div className="full-width blue"><p>GRADING SCALE</p></div>
 
-                                        <div className="grid-cell letter bold">A</div>
-                                        <div className="grid-cell letter bold">B</div>
-                                        <div className="grid-cell letter bold">C</div>
-                                        <div className="grid-cell letter bold">D</div>
-                                        <div className="grid-cell letter bold">F</div>
-                                        <div className="grid-cell letter bold">W</div>
-                                        <div className="grid-cell letter bold">I</div>
-                                        <div className="grid-cell letter bold">N/A</div>
+                                        <div className="grid-cell letter bold"><p>A</p></div>
+                                        <div className="grid-cell letter bold"><p>B</p></div>
+                                        <div className="grid-cell letter bold"><p>C</p></div>
+                                        <div className="grid-cell letter bold"><p>D</p></div>
+                                        <div className="grid-cell letter bold"><p>F</p></div>
+                                        <div className="grid-cell letter bold"><p>W</p></div>
+                                        <div className="grid-cell letter bold"><p>I</p></div>
+                                        <div className="grid-cell letter bold"><p>N/A</p></div>
 
-                                        <div className="grid-cell letter">100-90</div>
-                                        <div className="grid-cell letter">89-80</div>
-                                        <div className="grid-cell letter">79-70</div>
-                                        <div className="grid-cell letter">69-60</div>
-                                        <div className="grid-cell letter">59-0</div>
-                                        <div className="grid-cell letter">0</div>
-                                        <div className="grid-cell letter">0</div>
-                                        <div className="grid-cell letter">0</div>
+                                        <div className="grid-cell letter"><p>100-90</p></div>
+                                        <div className="grid-cell letter"><p>89-80</p></div>
+                                        <div className="grid-cell letter"><p>79-70</p></div>
+                                        <div className="grid-cell letter"><p>69-60</p></div>
+                                        <div className="grid-cell letter"><p>59-0</p></div>
+                                        <div className="grid-cell letter"><p>0</p></div>
+                                        <div className="grid-cell letter"><p>0</p></div>
+                                        <div className="grid-cell letter"><p>0</p></div>
 
-                                        <div className="grid-cell text"><span>Excellent</span>, work of exceptional quality which indicates the highest level of attainment in a course</div>
-                                        <div className="grid-cell text"><span>Good</span>, work above average which indicates a high level of achievement</div>
-                                        <div className="grid-cell text"><span>Average</span>, work of average quality representing substantial fulfillment of the minimum essentials
-
-                                        </div>
-                                        <div className="grid-cell text"><span>Poor</span>, but may represent passing if average level score is 70 and above</div>
-                                        <div className="grid-cell text"><span>Failure</span>, representing unacceptable performance in the course</div>
-                                        <div className="grid-cell text">Official <span>withdrawal</span> from a course or level</div>
-                                        <div className="grid-cell text"><span>Incomplete</span> work</div>
-                                        <div className="grid-cell text"><span>Failure</span> to meet the attendance requirement without valid reason</div>
+                                        <div className="grid-cell text"><p><span>Excellent</span>, work of exceptional quality which indicates the highest level of attainment in a course</p></div>
+                                        <div className="grid-cell text"><p><span>Good</span>, work above average which indicates a high level of achievement</p></div>
+                                        <div className="grid-cell text"><p><span>Average</span>, work of average quality representing substantial fulfillment of the minimum essentials</p></div>
+                                        <div className="grid-cell text"><p><span>Poor</span>, but may represent passing if average level score is 70 and above</p></div>
+                                        <div className="grid-cell text"><p><span>Failure</span>, representing unacceptable performance in the course</p></div>
+                                        <div className="grid-cell text"><p>Official <span>withdrawal</span> from a course or level</p></div>
+                                        <div className="grid-cell text"><p><span>Incomplete</span> work</p></div>
+                                        <div className="grid-cell text"><p><span>Failure</span> to meet the attendance requirement without valid reason</p></div>
                                     </div>
 
                                     <div className="signature-grid">
