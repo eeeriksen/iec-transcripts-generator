@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 import Papa from 'papaparse';
-import html2pdf from 'html2pdf.js';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Transcript } from './Transcript';
@@ -18,8 +17,6 @@ import levels2 from './assets/levels2.png'
 export default function App() {
     const pagesRef = useRef([]);
     const [students, setStudents] = useState([]);
-    const [modalOpen, setModalOpen] = useState(false);
-    const [selectedStudent, setSelectedStudent] = useState(null);
     const [studentElements, setStudentElements] = useState([]);
     const pdfRef = useRef();
 
@@ -31,10 +28,10 @@ export default function App() {
                 setStudents(result.data);
 
                 const grouped = result.data.reduce((acc, student) => {
-                    if (!acc[student.name]) {
-                        acc[student.name] = [];
+                    if (!acc[student['NAME']]) {
+                        acc[student['NAME']] = [];
                     }
-                    acc[student.name].push(student);
+                    acc[student['NAME']].push(student);
                     return acc;
                 }, {});
 
@@ -43,45 +40,7 @@ export default function App() {
         });
     };
 
-    const generatePDF = async (student) => {
-        // const container = pdfRef.current;
-        // const pages = container.querySelectorAll('.pdf-page');
-        // const index = Object.keys(groupedStudents).indexOf(student.name);
-        // const page = pages[index];
-        // console.log(page)
-
-        // console.log('Generating PDF for:', student.name);
-
-        // const options = {
-        //     filename: `carta-${student.name.replace(/\s+/g, '_')}.pdf`,
-        //     margin: 0,
-        //     image: { type: 'jpeg', quality: 1 },
-        //     html2canvas: { scale: 4 },
-        //     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
-        // };
-
-        // // await html2pdf().set(options).from(page).save();
-
-        // // otra opcion
-        // const html = pagesRef.current.map(el => el?.outerHTML).join('');
-
-        // console.log('HTML content:', html);
-
-        // const res = await fetch('http://localhost:3000/generate-pdf', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({ html })
-        // });
-
-        // const blob = await res.blob();
-        // const url = URL.createObjectURL(blob);
-        // const a = document.createElement('a');
-        // a.href = url;
-        // a.download = 'transcript.pdf';
-        // a.click();
-
-        // otra opcion
-
+    const generatePDF = async () => {
         const pages = document.querySelectorAll('.pdf-page');
 
         const pdf = new jsPDF({
@@ -120,15 +79,6 @@ export default function App() {
         }
     };
 
-    const openModal = (student) => {
-        setSelectedStudent(student);
-        setModalOpen(true);
-    };
-
-    const closeModal = () => {
-        setModalOpen(false);
-    };
-
     return (
         <>
             <main className="pt-40 m-auto max-w-5xl flex flex-col items-center">
@@ -156,19 +106,51 @@ export default function App() {
                             <h2 className="text-2xl font-semibold text-sky-800">List of Students and Their Courses</h2>
                         </div>
                         <ul className="mb-12 w-full">
-                            <li className="flex justify-between items-center py-2 border-b-2 border-gray-400 font-bold text-sky-800">
-                                <div className="w-1/3">Name</div>
-                                <div className="w-1/3">Course</div>
-                                <div className="w-1/3 text-right">Grade</div>
+                            <li className="flex justify-between text-[10px] items-center py-2 border-b-2 border-gray-400 font-bold text-sky-800">
+                                <div className="w-1/18">TERM</div>
+                                <div className="w-1/18">NUMBER</div>
+                                <div className="w-1/18">COUNTRY</div>
+                                <div className="w-1/18">VISA</div>
+                                <div className="w-1/18">STATUS</div>
+                                <div className="w-1/18">LEVEL</div>
+                                <div className="w-1/18">PROGRAM</div>
+                                <div className="w-1/18">COURSE</div>
+                                <div className="w-1/18">COURSE NAME</div>
+                                <div className="w-1/18">NAME</div>
+                                <div className="w-1/18">MID-TERM (30%)</div>
+                                <div className="w-1/18">FOLLOW-UP (10%)</div>
+                                <div className="w-1/18">COURSE PROJECT(20%)</div>
+                                <div className="w-1/18">FINAL (40%)</div>
+                                <div className="w-1/18">COURSE SCORE</div>
+                                <div className="w-1/18">COURSE GRADE</div>
+                                <div className="w-1/18">RESULT</div>
+                                <div className="w-1/18">ATTENDANCE</div>
+                                <div className="w-1/18">COLUMN1</div>
                             </li>
 
                             {Object.keys(groupedStudents).map((studentName, index) => (
                                 <div key={index}>
                                     {groupedStudents[studentName].map((course, i) => (
-                                        <li key={i} className="flex justify-between items-center py-2">
-                                            <div className="w-1/3">{i === 0 ? course.name : ''}</div>
-                                            <div className="w-1/3">{course.course}</div>
-                                            <div className="w-1/3 text-right">{course.grade}</div>
+                                        <li key={i} className="flex text-[10px] justify-between items-center py-2">
+                                            <div className="w-1/18">{course["TERM"]}</div>
+                                            <div className="w-1/18">{course["NUMBER"]}</div>
+                                            <div className="w-1/18">{course["COUNTRY"]}</div>
+                                            <div className="w-1/18">{course["VISA"]}</div>
+                                            <div className="w-1/18">{course["STATUS"]}</div>
+                                            <div className="w-1/18">{course["LEVEL"]}</div>
+                                            <div className="w-1/18">{course["PROGRAM"]}</div>
+                                            <div className="w-1/18">{course["COURSE"]}</div>
+                                            <div className="w-1/18">{course["COURSE NAME"]}</div>
+                                            <div className="w-1/18">{course["NAME"]}</div>
+                                            <div className="w-1/18">{course["MID TERM"]}</div>
+                                            <div className="w-1/18">{course["FOLLOW UP"]}</div>
+                                            <div className="w-1/18">{course["COURSE PROJECT"]}</div>
+                                            <div className="w-1/18">{course["FINAL"]}</div>
+                                            <div className="w-1/18">{course["COURSE SCORE"]}</div>
+                                            <div className="w-1/18">{course["COURSE GRADE"]}</div>
+                                            <div className="w-1/18">{course["RESULT"]}</div>
+                                            <div className="w-1/18">{course["ATTENDANCE"]}</div>
+                                            <div className="w-1/18">{course["COLUMN1"]}</div>
                                         </li>
                                     ))}
                                     <div className="border-b border-gray-300 my-2"></div>
@@ -185,8 +167,17 @@ export default function App() {
                     <h2 className="text-sky-800 font-black mb-20 text-3xl text-center">Student transcripts</h2>
                     {Object.keys(studentElements).map((studentName, index) => {
                         const studentData = studentElements[studentName];
-                        console.log(studentData)
-                        return <>
+
+                        const averageAttendance = studentData
+                            .map(course => parseFloat(course.COLUMN1.replace('%', '')))
+                            .filter(attendance => !isNaN(attendance))
+                            .reduce((sum, attendance, _, arr) =>
+                                arr.length === 0 ? 0 : sum + attendance / arr.length, 0
+                            );
+
+
+
+                        return <div key={index} id={`student-${index}`} className="pdf-container">
                             <div
                                 key={`1page-${studentName}`}
                                 className="pdf-page"
@@ -202,36 +193,34 @@ export default function App() {
                                     <div className="transcript-grid">
 
                                         <div className="grid-row row-gap-title">
-                                            <div className="cell"><p></p></div>
                                             <div className="cell"><p>STUDENT INFORMATION</p></div>
                                         </div>
 
                                         <div className="grid-row row-4-cols">
                                             <div className="cell"><p>NAME</p></div>
-                                            <div className="cell"><p></p></div>
+                                            <div className="cell normal"><p>{studentName}</p></div>
                                             <div className="cell"><p>IEC NUMBER</p></div>
-                                            <div className="cell"><p></p></div>
+                                            <div className="cell normal"><p>{studentData[0].NUMBER}</p></div>
                                         </div>
                                         <div className="grid-row row-4-cols">
                                             <div className="cell"><p>TERM</p></div>
-                                            <div className="cell"><p></p></div>
+                                            <div className="cell normal"><p>{studentData[0].TERM}</p></div>
                                             <div className="cell"><p>PROGRAM</p></div>
-                                            <div className="cell"><p></p></div>
+                                            <div className="cell normal"><p>{studentData[0].PROGRAM}</p></div>
                                         </div>
                                         <div className="grid-row row-4-cols">
                                             <div className="cell"><p>LEVEL</p></div>
-                                            <div className="cell"><p></p></div>
+                                            <div className="cell normal"><p>{studentData[0].LEVEL}</p></div>
                                             <div className="cell"><p>STATUS</p></div>
-                                            <div className="cell"><p></p></div>
+                                            <div className="cell normal"><p>{studentData[0].STATUS}</p></div>
                                         </div>
 
                                         <div className="grid-row row-gap-title">
-                                            <div className="cell"><p></p></div>
                                             <div className="cell"><p>ACADEMIC RECORDS</p></div>
                                         </div>
 
                                         <div className="grid-row row-grades-title">
-                                            <div className="cell"><p>COURSE</p></div>
+                                            <div className="cell name"><p>COURSE</p></div>
                                             <div className="cell"><p>CODE</p></div>
                                             <div className="cell"><p>MID-TERM</p></div>
                                             <div className="cell"><p>FOLLOW UP</p></div>
@@ -246,58 +235,24 @@ export default function App() {
                                         <div className="main-grid">
                                             <div className="courses-area">
                                                 <div className="courses-grid">
-                                                    <div className="course-row">
-                                                        <div className="course-cell course-name"><p>Matemáticas</p></div>
-                                                        <div className="course-cell"><p>MAT101</p></div>
-                                                        <div className="course-cell"><p>85</p></div>
-                                                        <div className="course-cell"><p>90</p></div>
-                                                        <div className="course-cell"><p>88</p></div>
-                                                        <div className="course-cell"><p>92</p></div>
-                                                        <div className="course-cell"><p>89</p></div>
-                                                        <div className="course-cell grade-a"><p>A</p></div>
-                                                        <div className="course-cell"><p>4.0</p></div>
-                                                    </div>
-
-                                                    <div className="course-row">
-                                                        <div className="course-cell course-name"><p>Historia</p></div>
-                                                        <div className="course-cell"><p>HIS201</p></div>
-                                                        <div className="course-cell"><p>78</p></div>
-                                                        <div className="course-cell"><p>82</p></div>
-                                                        <div className="course-cell"><p>85</p></div>
-                                                        <div className="course-cell"><p>80</p></div>
-                                                        <div className="course-cell"><p>81</p></div>
-                                                        <div className="course-cell grade-b"><p>B</p></div>
-                                                        <div className="course-cell"><p>3.0</p></div>
-                                                    </div>
-
-                                                    <div className="course-row">
-                                                        <div className="course-cell course-name"><p>Ciencias</p></div>
-                                                        <div className="course-cell"><p>SCI301</p></div>
-                                                        <div className="course-cell"><p>92</p></div>
-                                                        <div className="course-cell"><p>88</p></div>
-                                                        <div className="course-cell"><p>95</p></div>
-                                                        <div className="course-cell"><p>90</p></div>
-                                                        <div className="course-cell"><p>91</p></div>
-                                                        <div className="course-cell grade-a"><p>A</p></div>
-                                                        <div className="course-cell"><p>4.0</p></div>
-                                                    </div>
-
-                                                    <div className="course-row">
-                                                        <div className="course-cell course-name"><p>Inglés</p></div>
-                                                        <div className="course-cell"><p>ENG401</p></div>
-                                                        <div className="course-cell"><p>76</p></div>
-                                                        <div className="course-cell"><p>79</p></div>
-                                                        <div className="course-cell"><p>82</p></div>
-                                                        <div className="course-cell"><p>78</p></div>
-                                                        <div className="course-cell"><p>79</p></div>
-                                                        <div className="course-cell grade-b"><p>B</p></div>
-                                                        <div className="course-cell"><p>3.0</p></div>
-                                                    </div>
+                                                    {studentData.map((course, i) => (
+                                                        <div key={i} className="course-row">
+                                                            <div className="course-cell course-name"><p>{course['COURSE NAME']}</p></div>
+                                                            <div className="course-cell"><p>{course['COURSE']}</p></div>
+                                                            <div className="course-cell"><p>{course['MID TERM']}</p></div>
+                                                            <div className="course-cell"><p>{course['FOLLOW UP']}</p></div>
+                                                            <div className="course-cell"><p>{course['COURSE PROJECT']}</p></div>
+                                                            <div className="course-cell"><p>{course['FINAL']}</p></div>
+                                                            <div className="course-cell"><p>{course['COURSE SCORE']}</p></div>
+                                                            <div className={`course-cell grade-${course['COURSE GRADE'].toLowerCase()}`}><p>{course['COURSE GRADE']}</p></div>
+                                                            <div className="course-cell"><p>{course.RESULT}</p></div>
+                                                        </div>
+                                                    ))}
                                                 </div>
                                             </div>
 
                                             <div className="attendance-area">
-                                                <p>95%</p>
+                                                <p>{`${Math.round(averageAttendance * 100 / 100)}%`}</p>
                                             </div>
                                         </div>
 
@@ -389,11 +344,10 @@ export default function App() {
                                     <img src={footer} alt="Footer" />
                                 </footer>
                             </div>
-                        </>
+                        </div>
 
                     })}
                 </div>}
-                <Modal student={selectedStudent} isOpen={modalOpen} closeModal={closeModal} />
             </main>
         </>
     );

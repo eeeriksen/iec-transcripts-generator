@@ -62,7 +62,7 @@ header img {
 }
 
 main {
-    padding: 46px;
+    padding: 46px 0;
 }
 
 main main {
@@ -104,8 +104,12 @@ main main {
     display: block;
 }
 
+.cell.normal {
+    font-weight: normal;
+}
+
 .row-gap-title {
-    grid-template-columns: 1fr 9fr;
+    grid-template-columns: 10fr;
     height: 22px;
 }
 
@@ -147,7 +151,7 @@ main main {
 }
 
 .row-grades-title {
-    grid-template-columns: repeat(10, 1fr);
+    grid-template-columns: 76px repeat(9, 1fr);
     height: 24px;
 }
 
@@ -204,16 +208,13 @@ main main {
     font-size: 11px;
 }
 
-/* claude */
-/* Grid principal */
 .main-grid {
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
+    grid-template-columns: repeat(9, 1fr) 68px;
     grid-template-rows: auto auto;
     gap: 1px;
 }
 
-/* Encabezados */
 .header {
     background: #3498db;
     color: white;
@@ -226,13 +227,11 @@ main main {
     justify-content: center;
 }
 
-/* Área de datos de cursos (ocupa 9 columnas) */
 .courses-area {
     grid-column: 1 / 10;
     grid-row: 2;
 }
 
-/* Área de attendance (ocupa 1 columna y toda la altura) */
 .attendance-area {
     grid-column: 10;
     grid-row: 2;
@@ -248,10 +247,9 @@ main main {
     margin-top: -20px;
 }
 
-/* Sub-grid para los cursos */
 .courses-grid {
     display: grid;
-    grid-template-columns: repeat(9, 1fr);
+    grid-template-columns: 76px repeat(8, 1fr);
     height: 100%;
     gap: 1px;
 }
@@ -260,7 +258,6 @@ main main {
     display: contents;
 }
 
-/* Filas alternas con fondo gris */
 .course-row:nth-child(odd) .course-cell {
     background: #e6e6e6;
 }
@@ -282,43 +279,23 @@ main main {
 }
 
 .course-row .course-cell {
-    height: 32px;
+    height: 36px;
 }
 
 .course-row .course-cell p {
     margin-top: -11px;
 }
 
-/* Columna de COURSE con texto más pequeño para evitar desalineación */
 .course-cell.course-name {
     font-size: 11px;
     font-weight: 500;
+    line-height: 12px;
+    text-transform: uppercase;
+    text-align: left;
 }
-
-
-/* Estilos para las calificaciones */
-/* .grade-a {
-    color: #27ae60;
-    font-weight: bold;
-}
-
-.grade-b {
-    color: #2980b9;
-    font-weight: bold;
-}
-
-.grade-c {
-    color: #f39c12;
-    font-weight: bold;
-}
-
-.grade-f {
-    color: #e74c3c;
-    font-weight: bold;
-} */
 
 .row-final-score {
-    grid-template-columns: 1fr 5fr 1fr 2fr 1fr;
+    grid-template-columns: 76px 343.3px 1fr 137px 1fr;
     height: 34px;
     gap: 1px;
 }
