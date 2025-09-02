@@ -2,10 +2,8 @@ import { useRef, useState } from 'react';
 import Papa from 'papaparse';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import { Transcript } from './Transcript';
-import { Modal } from './Modal';
-import { Header } from './components/Header';
-import { FileIcon } from './components/FileIcon';
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 import logo from './assets/logo-2.png'
 import footer from './assets/footer-2.png'
 import vcea from './assets/vcea.png'
@@ -18,6 +16,7 @@ export default function App() {
     const pagesRef = useRef([]);
     const [students, setStudents] = useState([]);
     const [studentElements, setStudentElements] = useState([]);
+    const [isGenerating, setIsGenerating] = useState(false);
     const pdfRef = useRef();
 
     const handleCSV = (e) => {
@@ -40,31 +39,6 @@ export default function App() {
         });
     };
 
-    const generatePDF = async () => {
-        const pages = document.querySelectorAll('.pdf-page');
-
-        const pdf = new jsPDF({
-            orientation: 'portrait',
-            unit: 'px',
-            format: 'a4'
-        });
-
-        for (let i = 0; i < pages.length; i++) {
-            const canvas = await html2canvas(pages[i], { scale: 2 }); // alta calidad
-            const imgData = canvas.toDataURL('image/png');
-
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-            if (i > 0) pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        }
-
-        pdf.save('transcript.pdf');
-
-    };
-
     const groupedStudents = students.reduce((acc, student) => {
         if (!acc[student.name]) {
             acc[student.name] = [];
@@ -73,15 +47,52 @@ export default function App() {
         return acc;
     }, {});
 
-    const generarTodos = async () => {
-        for (const student of students) {
-            await generatePDF(student);
+    const generatePDFForStudent = async (studentName, index) => {
+        const pages = document.querySelectorAll(`#student-${index} .pdf-page`);
+    
+        const pdf = new jsPDF({
+            orientation: "portrait",
+            unit: "px",
+            format: "a4",
+        });
+    
+        for (let i = 0; i < pages.length; i++) {
+            const canvas = await html2canvas(pages[i], { scale: 2 });
+            const imgData = canvas.toDataURL("image/png");
+    
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    
+            if (i > 0) pdf.addPage();
+            pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
         }
+    
+        // En lugar de descargar, devolvemos el PDF como blob
+        return pdf.output("blob");
     };
+    
+    const generarTodos = async () => {
+        setIsGenerating(true);
+
+        const zip = new JSZip();
+        let index = 0;
+    
+        for (const studentName of Object.keys(studentElements)) {
+            const pdfBlob = await generatePDFForStudent(studentName, index);
+            zip.file(`${studentName}_transcript.pdf`, pdfBlob);
+            index++;
+        }
+    
+        const content = await zip.generateAsync({ type: "blob" });
+        saveAs(content, "transcripts.zip");
+
+        setIsGenerating(false); 
+    };    
 
     return (
         <>
-            <main className="pt-40 m-auto max-w-5xl flex flex-col items-center">
+            <main className="pt-40 m-auto max-w-7xl w-full px-6 sm:px-8 lg:px-12 flex flex-col items-center">
                 <h1 className="text-sky-800 font-black mb-4 text-5xl text-center">TSU IEC Transcript PDF Generator</h1>
                 <p className="text-sky-900 font-semibold mb-16 text-xl text-center">Quickly create and download professional PDF transcripts by simply uploading a CSV file with student course data</p>
                 {students.length === 0 && <div className="flex flex-col items-center gap-2">
@@ -157,14 +168,18 @@ export default function App() {
                                 </div>
                             ))}
                         </ul>
-                        <button onClick={generarTodos} className="mb-12 cursor-pointer bg-sky-800 hover:bg-sky-700 text-white font-semibold py-2 px-6 rounded-4xl shadow-lg transition duration-200 flex items-center justify-center">
-                            Download Transcripts
+                        <button
+                            onClick={generarTodos}
+                            className={`mb-12 cursor-pointer font-semibold py-2 px-6 rounded-4xl shadow-lg transition duration-200 flex items-center justify-center
+                                ${isGenerating ? "bg-gray-400 cursor-not-allowed" : "bg-sky-800 hover:bg-sky-700 text-white"}`}
+                            disabled={isGenerating}
+                        >
+                            {isGenerating ? "Generando..." : "Download Transcripts"}
                         </button>
                     </>
                 )}
 
                 {students.length > 0 && <div ref={pdfRef} className="mt-20">
-                    <h2 className="text-sky-800 font-black mb-20 text-3xl text-center">Student transcripts</h2>
                     {Object.keys(studentElements).map((studentName, index) => {
                         const studentData = studentElements[studentName];
 

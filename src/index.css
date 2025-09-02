@@ -506,3 +506,13 @@ footer {
 .logos.dos {
     margin-bottom: 70px;
 }
+
+.pdf-container {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+}
+
+.cursor-not-allowed {
+    cursor: not-allowed;
+}
